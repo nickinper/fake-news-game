@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FAKE NEWS SLOTS - Spin to Win the Truth!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial Black', sans-serif;
+            background: #1a0000;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Casino carpet pattern background */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(45deg, 
+                    #2a0000 0px, #2a0000 10px, 
+                    #1a0000 10px, #1a0000 20px),
+                repeating-linear-gradient(-45deg, 
+                    #2a0000 0px, #2a0000 10px, 
+                    #1a0000 10px, #1a0000 20px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .game-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header with title and stats */
+        .header {
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background: linear-gradient(180deg, #4a0000, #2a0000);
+            border-radius: 15px;
+            border: 3px solid #ffd700;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .game-title {
+            font-size: 36px;
+            color: #ffd700;
+            text-shadow: 
+                2px 2px 4px #000,
+                0 0 20px #ff0000,
+                0 0 40px #ff0000;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 2px solid #ffd700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            color: #ffd700;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* Slot Machine */
+        .slot-machine-wrapper {
+            position: relative;
+            background: linear-gradient(135deg, #8B0000, #4a0000);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 
+                0 10px 50px rgba(0,0,0,0.5),
+                inset 0 2px 5px rgba(255,255,255,0.2);
+        }
+
+        /* LED Border Lights */
+        .led-border {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 25px;
+            background: conic-gradient(
+                from 0deg,
+                #ff0000, #ff6600, #ffff00, #00ff00, 
+                #0099ff, #6633ff, #ff0099, #ff0000
+            );
+            animation: led-rotate 3s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes led-rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .slot-machine {
+            background: #000;
+            padding: 20px;
+            border-radius: 15px;
+            position: relative;
+            border: 5px solid #ffd700;
+        }
+
+        .slot-window {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            background: #111;
+            padding: 15px;
+            border-radius: 10px;
+            border: 3px solid #666;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reel {
+            width: 150px;
+            height: 450px;
+            background: #000;
+            border: 2px solid #444;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reel-strip {
+            position: absolute;
+            width: 100%;
+            transition: transform 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        }
+
+        .symbol {
+            width: 150px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            background: linear-gradient(180deg, #222, #111);
+            border-bottom: 1px solid #333;
+            position: relative;
+        }
+
+        .symbol.wild {
+            background: linear-gradient(180deg, #4a0e4e, #81689d);
+            animation: wild-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes wild-glow {
+            0%, 100% { box-shadow: inset 0 0 20px #ff00ff; }
+            50% { box-shadow: inset 0 0 40px #ff00ff, 0 0 20px #ff00ff; }
+        }
+
+        .symbol.scatter {
+            background: linear-gradient(180deg, #0e4e4a, #689d81);
+            animation: scatter-pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes scatter-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Paylines */
+        .paylines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .payline {
+            position: absolute;
+            height: 3px;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .payline.active {
+            opacity: 0.8;
+            animation: payline-flash 0.5s ease-in-out infinite;
+        }
+
+        @keyframes payline-flash {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Control Panel */
+        .control-panel {
+            width: 100%;
+            background: linear-gradient(180deg, #4a0000, #2a0000);
+            padding: 15px;
+            border-radius: 15px;
+            border: 3px solid #ffd700;
+            margin-top: 20px;
+        }
+
+        .bet-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .bet-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bet-label {
+            color: #ffd700;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .bet-button {
+            background: #000;
+            color: #ffd700;
+            border: 2px solid #ffd700;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .bet-button:hover {
+            background: #ffd700;
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .bet-button:active {
+            transform: translateY(0);
+        }
+
+        .bet-button.selected {
+            background: #ffd700;
+            color: #000;
+        }
+
+        /* Spin Button */
+        .spin-button {
+            width: 100%;
+            padding: 20px;
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(180deg, #ff0000, #cc0000);
+            color: #fff;
+            border: 3px solid #ffd700;
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .spin-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.3) 50%,
+                transparent 70%
+            );
+            transform: rotate(45deg) translate(-50%, -50%);
+            transition: all 0.5s;
+            opacity: 0;
+        }
+
+        .spin-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.5);
+        }
+
+        .spin-button:hover::before {
+            opacity: 1;
+            animation: shine 0.5s ease-in-out;
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(45deg) translate(-200%, -200%); }
+            100% { transform: rotate(45deg) translate(200%, 200%); }
+        }
+
+        .spin-button:active {
+            transform: translateY(0);
+        }
+
+        .spin-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Win Celebration */
+        .win-celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: radial-gradient(ellipse at center, #ffd700, #ff6600);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.5);
+        }
+
+        .win-celebration.show {
+            animation: celebration-pop 0.5s ease forwards;
+        }
+
+        @keyframes celebration-pop {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); }
+            50% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+        }
+
+        .win-amount {
+            font-size: 64px;
+            font-weight: bold;
+            color: #000;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .win-message {
+            font-size: 24px;
+            color: #000;
+        }
+
+        /* Coins */
+        .coin {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at 30% 30%, #ffed4e, #ffd700);
+            border-radius: 50%;
+            box-shadow: 
+                inset -2px -2px 10px rgba(0,0,0,0.3),
+                2px 2px 10px rgba(0,0,0,0.3);
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #996600;
+        }
+
+        .coin::after {
+            content: '$';
+        }
+
+        @keyframes coin-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Paytable Button */
+        .paytable-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #000;
+            color: #ffd700;
+            border: 2px solid #ffd700;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .paytable-button:hover {
+            background: #ffd700;
+            color: #000;
+        }
+
+        /* Sound Toggle */
+        .sound-toggle {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #000;
+            color: #ffd700;
+            border: 2px solid #ffd700;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .sound-toggle:hover {
+            background: #ffd700;
+            color: #000;
+        }
+
+        /* Mobile Responsive */
+        /* Paytable */
+        .paytable-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .paytable-overlay.show {
+            display: flex;
+        }
+
+        .paytable {
+            background: linear-gradient(180deg, #4a0000, #2a0000);
+            border: 3px solid #ffd700;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .paytable-title {
+            font-size: 32px;
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        .paytable-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            border: 1px solid #ffd700;
+        }
+
+        .paytable-section-title {
+            font-size: 18px;
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .symbol-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+
+        .symbol-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .symbol-display {
+            font-size: 30px;
+        }
+
+        .symbol-name {
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .symbol-payout {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .close-paytable {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px 30px;
+            background: #000;
+            color: #ffd700;
+            border: 2px solid #ffd700;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .close-paytable:hover {
+            background: #ffd700;
+            color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 24px;
+            }
+            
+            .reel {
+                width: 100px;
+                height: 300px;
+            }
+            
+            .symbol {
+                width: 100px;
+                height: 100px;
+                font-size: 40px;
+            }
+            
+            .spin-button {
+                font-size: 24px;
+                padding: 15px;
+            }
+            
+            .bet-controls {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <button class="sound-toggle" id="sound-toggle">🔊</button>
+        <button class="paytable-button" id="paytable-btn">PAYTABLE</button>
+        
+        <div class="header">
+            <h1 class="game-title">🎰 FAKE NEWS SLOTS 🎰</h1>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-label">Credits</span>
+                    <span class="stat-value" id="credits">1000</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Bet</span>
+                    <span class="stat-value" id="total-bet">5</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Win</span>
+                    <span class="stat-value" id="last-win">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Level</span>
+                    <span class="stat-value" id="player-level">1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="slot-machine-wrapper">
+            <div class="led-border"></div>
+            <div class="slot-machine">
+                <div class="slot-window">
+                    <div class="reel" id="reel-1">
+                        <div class="reel-strip"></div>
+                    </div>
+                    <div class="reel" id="reel-2">
+                        <div class="reel-strip"></div>
+                    </div>
+                    <div class="reel" id="reel-3">
+                        <div class="reel-strip"></div>
+                    </div>
+                    <div class="paylines" id="paylines"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <div class="bet-controls">
+                <div class="bet-group">
+                    <span class="bet-label">Bet:</span>
+                    <button class="bet-button bet-amount selected" data-bet="1">1</button>
+                    <button class="bet-button bet-amount" data-bet="5">5</button>
+                    <button class="bet-button bet-amount" data-bet="10">10</button>
+                    <button class="bet-button bet-amount" data-bet="25">25</button>
+                    <button class="bet-button bet-amount" data-bet="50">50</button>
+                </div>
+                <div class="bet-group">
+                    <span class="bet-label">Lines:</span>
+                    <button class="bet-button line-amount" data-lines="1">1</button>
+                    <button class="bet-button line-amount" data-lines="3">3</button>
+                    <button class="bet-button line-amount selected" data-lines="5">5</button>
+                    <button class="bet-button line-amount" data-lines="7">7</button>
+                    <button class="bet-button line-amount" data-lines="9">9</button>
+                </div>
+                <div class="bet-group">
+                    <button class="bet-button" id="max-bet">MAX BET</button>
+                </div>
+            </div>
+            <button class="spin-button" id="spin-button">SPIN TO WIN!</button>
+        </div>
+    </div>
+
+    <div class="win-celebration" id="win-celebration">
+        <div class="win-amount" id="win-amount">0</div>
+        <div class="win-message" id="win-message">BIG WIN!</div>
+    </div>
+
+    <div class="paytable-overlay" id="paytable-overlay">
+        <div class="paytable">
+            <h2 class="paytable-title">PAYTABLE</h2>
+            
+            <div class="paytable-section">
+                <h3 class="paytable-section-title">Symbol Payouts</h3>
+                <div class="symbol-row">
+                    <div class="symbol-info">
+                        <span class="symbol-display">🏆</span>
+                        <span class="symbol-name">TRUTH BOMB (Wild)</span>
+                    </div>
+                    <span class="symbol-payout">1000 x Bet</span>
+                </div>
+                <div class="symbol-row">
+                    <div class="symbol-info">
+                        <span class="symbol-display">📺</span>
+                        <span class="symbol-name">FAKE NEWS TV (Scatter)</span>
+                    </div>
+                    <span class="symbol-payout">Free Spins</span>
+                </div>
+                <div class="symbol-row">
+                    <div class="symbol-info">
+                        <span class="symbol-display">🎭</span>
+                        <span class="symbol-name">Political Mask</span>
+                    </div>
+                    <span class="symbol-payout">500 x Bet</span>
+                </div>
+                <div class="symbol-row">
+                    <div class="symbol-info">
+                        <span class="symbol-display">📱</span>
+                        <span class="symbol-name">Social Media</span>
+                    </div>
+                    <span class="symbol-payout">250 x Bet</span>
+                </div>
+                <div class="symbol-row">
+                    <div class="symbol-info">
+                        <span class="symbol-display">🗞️</span>
+                        <span class="symbol-name">Newspaper</span>
+                    </div>
+                    <span class="symbol-payout">150 x Bet</span>
+                </div>
+                <div class="symbol-row">
+                    <div class="symbol-info">
+                        <span class="symbol-display">💬</span>
+                        <span class="symbol-name">Speech Bubble</span>
+                    </div>
+                    <span class="symbol-payout">100 x Bet</span>
+                </div>
+                <div class="symbol-row">
+                    <div class="symbol-info">
+                        <span class="symbol-display">❓</span>
+                        <span class="symbol-name">Question Mark</span>
+                    </div>
+                    <span class="symbol-payout">50 x Bet</span>
+                </div>
+                <div class="symbol-row">
+                    <div class="symbol-info">
+                        <span class="symbol-display">✓</span>
+                        <span class="symbol-name">Checkmark</span>
+                    </div>
+                    <span class="symbol-payout">25 x Bet</span>
+                </div>
+                <div class="symbol-row">
+                    <div class="symbol-info">
+                        <span class="symbol-display">✗</span>
+                        <span class="symbol-name">X Mark</span>
+                    </div>
+                    <span class="symbol-payout">20 x Bet</span>
+                </div>
+            </div>
+            
+            <div class="paytable-section">
+                <h3 class="paytable-section-title">Special Features</h3>
+                <p style="color: #fff; margin-bottom: 10px;">
+                    🏆 <strong>WILD</strong> - Substitutes for all symbols except Scatter
+                </p>
+                <p style="color: #fff; margin-bottom: 10px;">
+                    📺 <strong>SCATTER</strong> - 3+ triggers Free Spins with 3x multiplier
+                </p>
+                <p style="color: #fff; margin-bottom: 10px;">
+                    <strong>PAYLINES</strong> - Win on 1-9 active paylines
+                </p>
+                <p style="color: #fff;">
+                    <strong>FREE SPINS</strong> - 3 Scatters = 10 spins, 4 = 15 spins, 5 = 20 spins
+                </p>
+            </div>
+            
+            <button class="close-paytable" id="close-paytable">CLOSE</button>
+        </div>
+    </div>
+
+    <script>
+        // Game configuration
+        const config = {
+            reelCount: 3,
+            rowCount: 3,
+            symbolHeight: 150,
+            spinDuration: 2000,
+            stopDelay: 300,
+            minSpinRotations: 3
+        };
+
+        // Symbol definitions
+        const symbols = {
+            wild: { id: 'wild', icon: '🏆', name: 'TRUTH BOMB', type: 'wild' },
+            scatter: { id: 'scatter', icon: '📺', name: 'FAKE NEWS TV', type: 'scatter' },
+            mask: { id: 'mask', icon: '🎭', name: 'Political Mask', value: 500 },
+            phone: { id: 'phone', icon: '📱', name: 'Social Media', value: 250 },
+            news: { id: 'news', icon: '🗞️', name: 'Newspaper', value: 150 },
+            speech: { id: 'speech', icon: '💬', name: 'Speech Bubble', value: 100 },
+            question: { id: 'question', icon: '❓', name: 'Question Mark', value: 50 },
+            check: { id: 'check', icon: '✓', name: 'Checkmark', value: 25 },
+            cross: { id: 'cross', icon: '✗', name: 'X Mark', value: 20 }
+        };
+
+        // Symbol weights for random generation
+        const symbolWeights = [
+            { symbol: symbols.wild, weight: 1 },
+            { symbol: symbols.scatter, weight: 2 },
+            { symbol: symbols.mask, weight: 3 },
+            { symbol: symbols.phone, weight: 5 },
+            { symbol: symbols.news, weight: 8 },
+            { symbol: symbols.speech, weight: 10 },
+            { symbol: symbols.question, weight: 15 },
+            { symbol: symbols.check, weight: 20 },
+            { symbol: symbols.cross, weight: 25 }
+        ];
+
+        // Payline definitions (for 9 lines)
+        const paylines = [
+            // Horizontal lines
+            [[0, 0], [1, 0], [2, 0]], // Top row
+            [[0, 1], [1, 1], [2, 1]], // Middle row
+            [[0, 2], [1, 2], [2, 2]], // Bottom row
+            // Diagonal lines
+            [[0, 0], [1, 1], [2, 2]], // Top-left to bottom-right
+            [[0, 2], [1, 1], [2, 0]], // Bottom-left to top-right
+            // V shapes
+            [[0, 0], [1, 2], [2, 0]], // V shape
+            [[0, 2], [1, 0], [2, 2]], // Inverted V
+            // Zigzag
+            [[0, 0], [1, 1], [2, 0]], // Small V
+            [[0, 1], [1, 0], [2, 1]]  // Small inverted V
+        ];
+
+        // Game state
+        let gameState = {
+            credits: 1000,
+            betAmount: 1,
+            linesAmount: 5,
+            totalBet: 5,
+            lastWin: 0,
+            level: 1,
+            experience: 0,
+            isSpinning: false,
+            soundEnabled: true,
+            freeSpins: 0,
+            multiplier: 1
+        };
+
+        // Audio context for sounds
+        let audioContext;
+        const sounds = {};
+
+        // Initialize audio
+        function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Reel spin sound
+            sounds.spin = () => {
+                const duration = 0.5;
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, audioContext.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(300, audioContext.currentTime + duration);
+                
+                gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                osc.start();
+                osc.stop(audioContext.currentTime + duration);
+            };
+
+            // Reel stop sound
+            sounds.stop = () => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.type = 'sine';
+                osc.frequency.value = 220;
+                
+                gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.1);
+            };
+
+            // Win sound
+            sounds.win = () => {
+                const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+                notes.forEach((freq, i) => {
+                    setTimeout(() => {
+                        const osc = audioContext.createOscillator();
+                        const gain = audioContext.createGain();
+                        
+                        osc.connect(gain);
+                        gain.connect(audioContext.destination);
+                        
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        
+                        osc.start();
+                        osc.stop(audioContext.currentTime + 0.3);
+                    }, i * 100);
+                });
+            };
+
+            // Big win sound
+            sounds.bigWin = () => {
+                const duration = 2;
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                const filter = audioContext.createBiquadFilter();
+                
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                filter.type = 'lowpass';
+                filter.frequency.value = 1000;
+                filter.Q.value = 10;
+                
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, audioContext.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + duration);
+                
+                gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                osc.start();
+                osc.stop(audioContext.currentTime + duration);
+            };
+
+            // Coin sound
+            sounds.coin = () => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.frequency.setValueAtTime(1000, audioContext.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+                
+                gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.1);
+            };
+
+            // Button click
+            sounds.click = () => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.frequency.value = 800;
+                gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+                
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.05);
+            };
+        }
+
+        // Play sound
+        function playSound(soundName) {
+            if (gameState.soundEnabled && sounds[soundName]) {
+                sounds[soundName]();
+            }
+        }
+
+        // Get random symbol based on weights
+        function getRandomSymbol() {
+            const totalWeight = symbolWeights.reduce((sum, item) => sum + item.weight, 0);
+            let random = Math.random() * totalWeight;
+            
+            for (const item of symbolWeights) {
+                random -= item.weight;
+                if (random <= 0) {
+                    return item.symbol;
+                }
+            }
+            
+            return symbolWeights[symbolWeights.length - 1].symbol;
+        }
+
+        // Initialize reels
+        function initializeReels() {
+            for (let i = 1; i <= config.reelCount; i++) {
+                const reel = document.getElementById(`reel-${i}`);
+                const strip = reel.querySelector('.reel-strip');
+                
+                // Create symbols for the reel (extra for smooth spinning)
+                const symbolCount = 20;
+                for (let j = 0; j < symbolCount; j++) {
+                    const symbol = getRandomSymbol();
+                    const symbolElement = createSymbolElement(symbol);
+                    strip.appendChild(symbolElement);
+                }
+                
+                // Position to show middle 3 symbols
+                strip.style.transform = `translateY(-${config.symbolHeight}px)`;
+            }
+        }
+
+        // Create symbol element
+        function createSymbolElement(symbol) {
+            const div = document.createElement('div');
+            div.className = 'symbol';
+            if (symbol.type === 'wild') div.classList.add('wild');
+            if (symbol.type === 'scatter') div.classList.add('scatter');
+            div.textContent = symbol.icon;
+            div.dataset.symbolId = symbol.id;
+            return div;
+        }
+
+        // Update display
+        function updateDisplay() {
+            document.getElementById('credits').textContent = gameState.credits;
+            document.getElementById('total-bet').textContent = gameState.totalBet;
+            document.getElementById('last-win').textContent = gameState.lastWin;
+            document.getElementById('player-level').textContent = gameState.level;
+        }
+
+        // Handle bet amount change
+        function handleBetChange(amount) {
+            if (gameState.isSpinning) return;
+            
+            playSound('click');
+            gameState.betAmount = amount;
+            gameState.totalBet = gameState.betAmount * gameState.linesAmount;
+            
+            // Update button states
+            document.querySelectorAll('.bet-amount').forEach(btn => {
+                btn.classList.toggle('selected', parseInt(btn.dataset.bet) === amount);
+            });
+            
+            updateDisplay();
+        }
+
+        // Handle lines change
+        function handleLinesChange(lines) {
+            if (gameState.isSpinning) return;
+            
+            playSound('click');
+            gameState.linesAmount = lines;
+            gameState.totalBet = gameState.betAmount * gameState.linesAmount;
+            
+            // Update button states
+            document.querySelectorAll('.line-amount').forEach(btn => {
+                btn.classList.toggle('selected', parseInt(btn.dataset.lines) === lines);
+            });
+            
+            updateDisplay();
+        }
+
+        // Handle max bet
+        function handleMaxBet() {
+            if (gameState.isSpinning) return;
+            
+            playSound('click');
+            gameState.betAmount = 50;
+            gameState.linesAmount = 9;
+            gameState.totalBet = gameState.betAmount * gameState.linesAmount;
+            
+            // Update button states
+            document.querySelectorAll('.bet-amount').forEach(btn => {
+                btn.classList.toggle('selected', parseInt(btn.dataset.bet) === 50);
+            });
+            document.querySelectorAll('.line-amount').forEach(btn => {
+                btn.classList.toggle('selected', parseInt(btn.dataset.lines) === 9);
+            });
+            
+            updateDisplay();
+        }
+
+        // Spin reels
+        async function spin() {
+            if (gameState.isSpinning) return;
+            
+            // Check if using free spins or regular credits
+            if (gameState.freeSpins > 0) {
+                gameState.freeSpins--;
+            } else {
+                if (gameState.credits < gameState.totalBet) return;
+                gameState.credits -= gameState.totalBet;
+            }
+            
+            gameState.isSpinning = true;
+            gameState.lastWin = 0;
+            updateDisplay();
+            
+            const spinButton = document.getElementById('spin-button');
+            spinButton.disabled = true;
+            spinButton.textContent = 'SPINNING...';
+            
+            playSound('spin');
+            
+            // Spin each reel
+            const spinPromises = [];
+            for (let i = 1; i <= config.reelCount; i++) {
+                spinPromises.push(spinReel(i, i * config.stopDelay));
+            }
+            
+            await Promise.all(spinPromises);
+            
+            // Check for wins
+            checkWins();
+            
+            // Reset multiplier if no more free spins
+            if (gameState.freeSpins === 0) {
+                gameState.multiplier = 1;
+            }
+            
+            // Re-enable spin button
+            gameState.isSpinning = false;
+            spinButton.disabled = false;
+            spinButton.textContent = gameState.freeSpins > 0 ? 
+                `FREE SPIN (${gameState.freeSpins})` : 'SPIN TO WIN!';
+        }
+
+        // Spin individual reel
+        async function spinReel(reelIndex, delay) {
+            await new Promise(resolve => setTimeout(resolve, delay));
+            
+            const reel = document.getElementById(`reel-${reelIndex}`);
+            const strip = reel.querySelector('.reel-strip');
+            
+            // Add new symbols at the top
+            const currentSymbols = strip.querySelectorAll('.symbol');
+            const symbolsToAdd = 10;
+            
+            for (let i = 0; i < symbolsToAdd; i++) {
+                const symbol = getRandomSymbol();
+                const symbolElement = createSymbolElement(symbol);
+                strip.insertBefore(symbolElement, strip.firstChild);
+            }
+            
+            // Calculate spin distance
+            const spinDistance = (symbolsToAdd + config.minSpinRotations * 3) * config.symbolHeight;
+            
+            // Start spinning animation
+            strip.style.transition = `transform ${config.spinDuration}ms cubic-bezier(0.17, 0.67, 0.12, 0.99)`;
+            strip.style.transform = `translateY(${spinDistance - config.symbolHeight}px)`;
+            
+            // Wait for spin to complete
+            await new Promise(resolve => setTimeout(resolve, config.spinDuration));
+            
+            playSound('stop');
+            
+            // Remove old symbols
+            const allSymbols = strip.querySelectorAll('.symbol');
+            while (allSymbols.length > 10) {
+                strip.removeChild(strip.lastChild);
+            }
+            
+            // Reset position
+            strip.style.transition = 'none';
+            strip.style.transform = `translateY(-${config.symbolHeight}px)`;
+        }
+
+        // Get visible symbols
+        function getVisibleSymbols() {
+            const visibleSymbols = [];
+            
+            for (let col = 0; col < config.reelCount; col++) {
+                const reel = document.getElementById(`reel-${col + 1}`);
+                const symbols = reel.querySelectorAll('.symbol');
+                const columnSymbols = [];
+                
+                // Get the 3 visible symbols (indices 1, 2, 3)
+                for (let row = 0; row < config.rowCount; row++) {
+                    const symbol = symbols[row + 1];
+                    if (symbol) {
+                        columnSymbols.push(symbol);
+                    }
+                }
+                
+                visibleSymbols.push(columnSymbols);
+            }
+            
+            return visibleSymbols;
+        }
+
+        // Check for wins
+        function checkWins() {
+            const visibleSymbols = getVisibleSymbols();
+            let totalWin = 0;
+            const winningLines = [];
+            
+            // Check each active payline
+            for (let i = 0; i < gameState.linesAmount; i++) {
+                const line = paylines[i];
+                const lineSymbols = line.map(([col, row]) => {
+                    const reel = document.getElementById(`reel-${col + 1}`);
+                    const symbolElements = reel.querySelectorAll('.symbol');
+                    return symbolElements[row + 1];
+                });
+                
+                const lineWin = checkLineWin(lineSymbols);
+                if (lineWin > 0) {
+                    totalWin += lineWin * gameState.betAmount;
+                    winningLines.push(i);
+                }
+            }
+            
+            // Apply multiplier
+            totalWin *= gameState.multiplier;
+            
+            if (totalWin > 0) {
+                gameState.credits += totalWin;
+                gameState.lastWin = totalWin;
+                updateDisplay();
+                
+                // Show winning lines
+                highlightWinningLines(winningLines);
+                
+                // Celebrations
+                if (totalWin >= gameState.totalBet * 20) {
+                    playSound('bigWin');
+                    showBigWin(totalWin);
+                    dropCoins(20);
+                } else {
+                    playSound('win');
+                    if (totalWin >= gameState.totalBet * 10) {
+                        dropCoins(10);
+                    }
+                }
+            }
+        }
+
+        // Check line for win
+        function checkLineWin(lineSymbols) {
+            if (!lineSymbols[0]) return 0;
+            
+            const firstSymbolId = lineSymbols[0].dataset.symbolId;
+            const firstSymbol = Object.values(symbols).find(s => s.id === firstSymbolId);
+            
+            if (!firstSymbol) return 0;
+            
+            let matchCount = 1;
+            let hasWild = firstSymbol.type === 'wild';
+            
+            // Count matching symbols
+            for (let i = 1; i < lineSymbols.length; i++) {
+                const symbolId = lineSymbols[i].dataset.symbolId;
+                const symbol = Object.values(symbols).find(s => s.id === symbolId);
+                
+                if (!symbol) break;
+                
+                if (symbol.id === firstSymbolId || 
+                    symbol.type === 'wild' || 
+                    firstSymbol.type === 'wild') {
+                    matchCount++;
+                    if (symbol.type === 'wild') hasWild = true;
+                } else {
+                    break;
+                }
+            }
+            
+            // Calculate win
+            if (matchCount >= 3) {
+                const baseValue = firstSymbol.value || 1000; // Wild value
+                const multipliers = [0, 0, 0, 1, 5, 10]; // 3, 4, 5 matches
+                return baseValue * multipliers[matchCount] * (hasWild ? 2 : 1);
+            }
+            
+            // Check for scatters
+            const scatterCount = lineSymbols.filter(s => 
+                s.dataset.symbolId === 'scatter'
+            ).length;
+            
+            if (scatterCount >= 3) {
+                triggerFreeSpins(scatterCount);
+                return 100 * scatterCount;
+            }
+            
+            return 0;
+        }
+
+        // Highlight winning lines
+        function highlightWinningLines(lines) {
+            const paylinesContainer = document.getElementById('paylines');
+            paylinesContainer.innerHTML = '';
+            
+            lines.forEach((lineIndex, i) => {
+                setTimeout(() => {
+                    const line = paylines[lineIndex];
+                    const svgLine = createPaylineSVG(line, lineIndex);
+                    paylinesContainer.appendChild(svgLine);
+                }, i * 200);
+            });
+            
+            // Clear lines after 3 seconds
+            setTimeout(() => {
+                paylinesContainer.innerHTML = '';
+            }, 3000);
+        }
+
+        // Create payline SVG
+        function createPaylineSVG(line, index) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.style.position = 'absolute';
+            svg.style.width = '100%';
+            svg.style.height = '100%';
+            svg.style.pointerEvents = 'none';
+            
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const points = line.map(([col, row]) => {
+                const x = col * 160 + 80;
+                const y = row * 150 + 75;
+                return `${x},${y}`;
+            });
+            
+            path.setAttribute('d', `M ${points.join(' L ')}`);
+            path.setAttribute('stroke', `hsl(${index * 40}, 100%, 50%)`);
+            path.setAttribute('stroke-width', '4');
+            path.setAttribute('fill', 'none');
+            path.setAttribute('opacity', '0.8');
+            path.classList.add('payline', 'active');
+            
+            svg.appendChild(path);
+            return svg;
+        }
+
+        // Show big win celebration
+        function showBigWin(amount) {
+            const celebration = document.getElementById('win-celebration');
+            const winAmount = document.getElementById('win-amount');
+            const winMessage = document.getElementById('win-message');
+            
+            winAmount.textContent = amount;
+            
+            if (amount >= gameState.totalBet * 50) {
+                winMessage.textContent = 'MEGA WIN!';
+            } else if (amount >= gameState.totalBet * 30) {
+                winMessage.textContent = 'HUGE WIN!';
+            } else {
+                winMessage.textContent = 'BIG WIN!';
+            }
+            
+            celebration.classList.add('show');
+            
+            setTimeout(() => {
+                celebration.classList.remove('show');
+            }, 3000);
+        }
+
+        // Drop coins animation
+        function dropCoins(count) {
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const coin = document.createElement('div');
+                    coin.className = 'coin';
+                    coin.style.left = `${Math.random() * window.innerWidth}px`;
+                    coin.style.top = '-50px';
+                    coin.style.animation = `coin-fall ${2 + Math.random() * 2}s ease-in`;
+                    document.body.appendChild(coin);
+                    
+                    playSound('coin');
+                    
+                    setTimeout(() => coin.remove(), 4000);
+                }, i * 100);
+            }
+        }
+
+        // Trigger free spins
+        function triggerFreeSpins(scatterCount) {
+            const freeSpinAmounts = [0, 0, 0, 10, 15, 20];
+            gameState.freeSpins += freeSpinAmounts[scatterCount];
+            gameState.multiplier = 3; // Triple wins during free spins
+            
+            // Update button
+            const spinButton = document.getElementById('spin-button');
+            spinButton.textContent = `FREE SPIN (${gameState.freeSpins})`;
+        }
+
+        // Initialize game
+        function init() {
+            initAudio();
+            initializeReels();
+            updateDisplay();
+            
+            // Event listeners
+            document.getElementById('spin-button').addEventListener('click', spin);
+            document.getElementById('max-bet').addEventListener('click', handleMaxBet);
+            
+            document.querySelectorAll('.bet-amount').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    handleBetChange(parseInt(btn.dataset.bet));
+                });
+            });
+            
+            document.querySelectorAll('.line-amount').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    handleLinesChange(parseInt(btn.dataset.lines));
+                });
+            });
+            
+            document.getElementById('sound-toggle').addEventListener('click', () => {
+                gameState.soundEnabled = !gameState.soundEnabled;
+                document.getElementById('sound-toggle').textContent = 
+                    gameState.soundEnabled ? '🔊' : '🔇';
+                playSound('click');
+            });
+            
+            // Paytable button
+            document.getElementById('paytable-btn').addEventListener('click', () => {
+                document.getElementById('paytable-overlay').classList.add('show');
+                playSound('click');
+            });
+            
+            document.getElementById('close-paytable').addEventListener('click', () => {
+                document.getElementById('paytable-overlay').classList.remove('show');
+                playSound('click');
+            });
+            
+            // Handle keyboard
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    spin();
+                }
+            });
+        }
+
+        // Start game when loaded
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
