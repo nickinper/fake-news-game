@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>FAKE NEWS! - Can You Spot the Truth?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+            user-select: none;
+        }
+
+        .game-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .logo {
+            font-family: Impact, sans-serif;
+            font-size: 32px;
+            color: #ff0000;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .progress {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #888;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 4px;
+            background: #333;
+            margin: 10px auto;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #ff0000;
+            transition: width 0.3s ease;
+        }
+
+        .mute-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        .card-stack {
+            position: relative;
+            width: 90%;
+            max-width: 400px;
+            height: 500px;
+        }
+
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            cursor: grab;
+        }
+
+        .card.dragging {
+            cursor: grabbing;
+            transition: none;
+        }
+
+        .card.swiped-left {
+            transform: translateX(-150%) rotate(-30deg);
+            opacity: 0;
+        }
+
+        .card.swiped-right {
+            transform: translateX(150%) rotate(30deg);
+            opacity: 0;
+        }
+
+        .claim-number {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .claim-text {
+            flex: 1;
+            font-size: 24px;
+            line-height: 1.4;
+            color: #000;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+
+        .swipe-indicators {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 60px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+
+        .swipe-left {
+            left: 20px;
+            color: #ff0000;
+        }
+
+        .swipe-right {
+            right: 20px;
+            color: #00ff00;
+        }
+
+        .card.tilted-left .swipe-left,
+        .card.tilted-right .swipe-right {
+            opacity: 0.8;
+        }
+
+        .result-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            padding: 20px;
+        }
+
+        .result-overlay.show {
+            display: flex;
+        }
+
+        .result-indicator {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .result-indicator.correct {
+            color: #00ff00;
+        }
+
+        .result-indicator.wrong {
+            color: #ff0000;
+        }
+
+        .result-explanation {
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 10px;
+            max-width: 400px;
+            line-height: 1.4;
+        }
+
+        .result-source {
+            font-size: 14px;
+            color: #666;
+            text-decoration: none;
+            margin-bottom: 10px;
+        }
+
+        .result-stats {
+            font-size: 16px;
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .continue-btn {
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .continue-btn:active {
+            transform: scale(0.95);
+        }
+
+        .end-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .end-screen.show {
+            display: flex;
+        }
+
+        .score-display {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .performance-text {
+            font-size: 20px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .detector-rating {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+
+        .share-btn {
+            padding: 20px 60px;
+            font-size: 24px;
+            font-weight: bold;
+            background: #1da1f2;
+            color: #fff;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .share-btn:active {
+            transform: scale(0.95);
+        }
+
+        .play-again-btn {
+            padding: 15px 40px;
+            font-size: 18px;
+            background: transparent;
+            color: #fff;
+            border: 2px solid #fff;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .play-again-btn:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        .flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 40;
+        }
+
+        .flash.green {
+            background: rgba(0, 255, 0, 0.3);
+            animation: flash 0.3s ease;
+        }
+
+        .flash.red {
+            background: rgba(255, 0, 0, 0.3);
+            animation: flash 0.3s ease;
+        }
+
+        @keyframes flash {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @media (max-width: 480px) {
+            .claim-text {
+                font-size: 20px;
+            }
+            
+            .card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1 class="logo">FAKE NEWS!</h1>
+            <div class="progress">
+                <span id="progress-text">Claim 1/10</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <button class="mute-btn" id="mute-btn">🔊</button>
+
+        <div class="card-stack" id="card-stack">
+            <div class="card" id="current-card">
+                <div class="claim-number">Claim #1</div>
+                <div class="claim-text" id="claim-text"></div>
+                <div class="swipe-indicators">
+                    <div class="swipe-left">✗</div>
+                    <div class="swipe-right">✓</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-overlay" id="result-overlay">
+            <div class="result-indicator" id="result-indicator"></div>
+            <div class="result-explanation" id="result-explanation"></div>
+            <a class="result-source" id="result-source" href="#" target="_blank">Source</a>
+            <div class="result-stats" id="result-stats"></div>
+            <button class="continue-btn" id="continue-btn">NEXT</button>
+        </div>
+
+        <div class="end-screen" id="end-screen">
+            <div class="score-display" id="score-display"></div>
+            <div class="performance-text" id="performance-text"></div>
+            <div class="detector-rating" id="detector-rating"></div>
+            <button class="share-btn" id="share-btn">SHARE</button>
+            <button class="play-again-btn" id="play-again-btn">Play Today's Challenge</button>
+        </div>
+
+        <div class="flash" id="flash"></div>
+    </div>
+
+    <script>
+        // Game data
+        const claims = [
+            {
+                text: "Biden claims he invented the internet",
+                isReal: false,
+                explanation: "This is completely fabricated. Al Gore was famously misquoted about the internet, not Biden.",
+                source: "https://www.snopes.com",
+                wrongCount: 2341
+            },
+            {
+                text: "Trump says he's never eaten a vegetable",
+                isReal: false,
+                explanation: "While Trump prefers fast food, this claim is made up.",
+                source: "https://www.politifact.com",
+                wrongCount: 3892
+            },
+            {
+                text: "Politician suggests hurricane can be nuked",
+                isReal: true,
+                explanation: "Trump actually suggested using nuclear weapons to stop hurricanes in 2019.",
+                source: "https://www.axios.com/trump-nuclear-bombs-hurricanes",
+                wrongCount: 8234
+            },
+            {
+                text: "AOC claims unemployment is low because everyone has two jobs",
+                isReal: true,
+                explanation: "AOC did say this in a 2018 interview, though economists disputed the logic.",
+                source: "https://www.politifact.com/factchecks/2018/jul/18/alexandria-ocasio-cortez",
+                wrongCount: 6721
+            },
+            {
+                text: "Scientists say chocolate helps weight loss",
+                isReal: false,
+                explanation: "This was a deliberately bad study created to expose poor science journalism.",
+                source: "https://io9.gizmodo.com/i-fooled-millions-into-thinking-chocolate-helps-weight-1707251800",
+                wrongCount: 4532
+            },
+            {
+                text: "Trump claims windmills cause cancer",
+                isReal: true,
+                explanation: "Trump said at a 2019 rally that windmill noise causes cancer.",
+                source: "https://thehill.com/homenews/administration/437096-trump-claims-noise-from-windmills-causes-cancer",
+                wrongCount: 7891
+            },
+            {
+                text: "Biden fell asleep during climate summit",
+                isReal: false,
+                explanation: "Biden briefly closed his eyes but didn't fall asleep at COP26.",
+                source: "https://www.reuters.com/fact-check",
+                wrongCount: 5643
+            },
+            {
+                text: "Congressman worried Guam might tip over and capsize",
+                isReal: true,
+                explanation: "Rep. Hank Johnson really asked if Guam could tip over in 2010.",
+                source: "https://www.snopes.com/fact-check/tipping-point",
+                wrongCount: 9872
+            },
+            {
+                text: "Elon Musk offers to fight Mark Zuckerberg in cage match",
+                isReal: true,
+                explanation: "Musk challenged Zuckerberg to a cage fight in June 2023 on Twitter.",
+                source: "https://www.bbc.com/news/business-65981766",
+                wrongCount: 3421
+            },
+            {
+                text: "Florida bans teaching about gravity in schools",
+                isReal: false,
+                explanation: "This is satire. Florida has controversial education laws but hasn't banned gravity.",
+                source: "https://www.snopes.com",
+                wrongCount: 4123
+            }
+        ];
+
+        // Game state
+        let currentClaim = 0;
+        let score = 0;
+        let streak = 0;
+        let muted = false;
+        let isProcessing = false;
+
+        // Audio context
+        let audioContext;
+        const sounds = {};
+
+        // Initialize audio
+        function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create sounds
+            sounds.correct = () => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.value = 523.25; // C5
+                gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.3);
+            };
+
+            sounds.wrong = () => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.value = 130.81; // C3
+                osc.type = 'sawtooth';
+                gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.5);
+            };
+
+            sounds.swish = () => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                const filter = audioContext.createBiquadFilter();
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.type = 'sawtooth';
+                filter.type = 'highpass';
+                filter.frequency.setValueAtTime(100, audioContext.currentTime);
+                filter.frequency.exponentialRampToValueAtTime(3000, audioContext.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.1);
+            };
+
+            sounds.levelup = () => {
+                const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+                notes.forEach((freq, i) => {
+                    setTimeout(() => {
+                        const osc = audioContext.createOscillator();
+                        const gain = audioContext.createGain();
+                        osc.connect(gain);
+                        gain.connect(audioContext.destination);
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                        osc.start();
+                        osc.stop(audioContext.currentTime + 0.2);
+                    }, i * 100);
+                });
+            };
+        }
+
+        // Play sound
+        function playSound(soundName) {
+            if (!muted && sounds[soundName]) {
+                sounds[soundName]();
+            }
+        }
+
+        // Initialize game
+        function init() {
+            initAudio();
+            loadClaim();
+            setupSwipeHandlers();
+            setupButtons();
+            
+            // Check for daily challenge
+            const today = new Date().toDateString();
+            const lastDaily = localStorage.getItem('lastDaily');
+            if (lastDaily !== today) {
+                localStorage.setItem('lastDaily', today);
+                localStorage.setItem('dailyCompleted', 'false');
+            }
+        }
+
+        // Load current claim
+        function loadClaim() {
+            const card = document.getElementById('current-card');
+            const claimText = document.getElementById('claim-text');
+            const progressText = document.getElementById('progress-text');
+            const progressFill = document.getElementById('progress-fill');
+            
+            claimText.textContent = claims[currentClaim].text;
+            progressText.textContent = `Claim ${currentClaim + 1}/10`;
+            progressFill.style.width = `${((currentClaim + 1) / 10) * 100}%`;
+            
+            card.querySelector('.claim-number').textContent = `Claim #${currentClaim + 1}`;
+            
+            playSound('swish');
+            
+            // Analytics
+            console.log('Claim loaded:', currentClaim + 1);
+        }
+
+        // Setup swipe handlers
+        function setupSwipeHandlers() {
+            const card = document.getElementById('current-card');
+            let startX = 0;
+            let startY = 0;
+            let currentX = 0;
+            let currentY = 0;
+            let isDragging = false;
+
+            function handleStart(x, y) {
+                if (isProcessing) return;
+                isDragging = true;
+                startX = x;
+                startY = y;
+                card.classList.add('dragging');
+            }
+
+            function handleMove(x, y) {
+                if (!isDragging || isProcessing) return;
+                
+                currentX = x - startX;
+                currentY = y - startY;
+                
+                const rotation = currentX * 0.1;
+                card.style.transform = `translateX(${currentX}px) translateY(${currentY}px) rotate(${rotation}deg)`;
+                
+                // Show indicators
+                if (currentX < -50) {
+                    card.classList.add('tilted-left');
+                    card.classList.remove('tilted-right');
+                } else if (currentX > 50) {
+                    card.classList.add('tilted-right');
+                    card.classList.remove('tilted-left');
+                } else {
+                    card.classList.remove('tilted-left', 'tilted-right');
+                }
+            }
+
+            function handleEnd() {
+                if (!isDragging || isProcessing) return;
+                isDragging = false;
+                card.classList.remove('dragging');
+                
+                const threshold = 100;
+                
+                if (currentX < -threshold) {
+                    handleSwipe('left');
+                } else if (currentX > threshold) {
+                    handleSwipe('right');
+                } else {
+                    // Snap back
+                    card.style.transform = '';
+                    card.classList.remove('tilted-left', 'tilted-right');
+                }
+            }
+
+            // Touch events
+            card.addEventListener('touchstart', (e) => {
+                const touch = e.touches[0];
+                handleStart(touch.clientX, touch.clientY);
+            });
+
+            card.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                handleMove(touch.clientX, touch.clientY);
+            });
+
+            card.addEventListener('touchend', handleEnd);
+
+            // Mouse events
+            card.addEventListener('mousedown', (e) => {
+                handleStart(e.clientX, e.clientY);
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                handleMove(e.clientX, e.clientY);
+            });
+
+            document.addEventListener('mouseup', handleEnd);
+        }
+
+        // Handle swipe
+        function handleSwipe(direction) {
+            if (isProcessing) return;
+            isProcessing = true;
+            
+            const card = document.getElementById('current-card');
+            const claim = claims[currentClaim];
+            const userAnswer = direction === 'right';
+            const isCorrect = (userAnswer === claim.isReal);
+            
+            // Animate card out
+            card.classList.add(`swiped-${direction}`);
+            
+            // Haptic feedback
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+            
+            // Update score
+            if (isCorrect) {
+                score++;
+                streak++;
+                if (streak === 5) {
+                    playSound('levelup');
+                } else {
+                    playSound('correct');
+                }
+            } else {
+                streak = 0;
+                playSound('wrong');
+            }
+            
+            // Show result
+            setTimeout(() => {
+                showResult(isCorrect);
+            }, 300);
+            
+            // Analytics
+            console.log(`Swipe ${direction} on claim ${currentClaim + 1}: ${isCorrect ? 'correct' : 'wrong'}`);
+        }
+
+        // Show result
+        function showResult(isCorrect) {
+            const overlay = document.getElementById('result-overlay');
+            const indicator = document.getElementById('result-indicator');
+            const explanation = document.getElementById('result-explanation');
+            const source = document.getElementById('result-source');
+            const stats = document.getElementById('result-stats');
+            const flash = document.getElementById('flash');
+            
+            const claim = claims[currentClaim];
+            
+            // Flash effect
+            flash.className = `flash ${isCorrect ? 'green' : 'red'}`;
+            setTimeout(() => {
+                flash.className = 'flash';
+            }, 300);
+            
+            // Set result content
+            indicator.textContent = claim.isReal ? 'REAL ✓' : 'FAKE NEWS ✗';
+            indicator.className = `result-indicator ${isCorrect ? 'correct' : 'wrong'}`;
+            explanation.textContent = claim.explanation;
+            source.href = claim.source;
+            stats.textContent = `${claim.wrongCount.toLocaleString()} people got this wrong`;
+            
+            overlay.classList.add('show');
+        }
+
+        // Continue to next claim
+        function continueGame() {
+            const overlay = document.getElementById('result-overlay');
+            const card = document.getElementById('current-card');
+            
+            overlay.classList.remove('show');
+            card.classList.remove('swiped-left', 'swiped-right', 'tilted-left', 'tilted-right');
+            card.style.transform = '';
+            
+            currentClaim++;
+            
+            if (currentClaim < claims.length) {
+                loadClaim();
+                isProcessing = false;
+            } else {
+                showEndScreen();
+            }
+        }
+
+        // Show end screen
+        function showEndScreen() {
+            const cardStack = document.getElementById('card-stack');
+            const endScreen = document.getElementById('end-screen');
+            const scoreDisplay = document.getElementById('score-display');
+            const performanceText = document.getElementById('performance-text');
+            const detectorRating = document.getElementById('detector-rating');
+            
+            cardStack.style.display = 'none';
+            
+            const percentage = Math.round((score / 10) * 100);
+            const betterThan = Math.round(50 + (percentage / 2));
+            
+            scoreDisplay.textContent = `You detected ${score}/10 fake news!`;
+            performanceText.textContent = `Better than ${betterThan}% of players!`;
+            
+            let rating;
+            if (score >= 9) rating = 'EXCELLENT! 🏆';
+            else if (score >= 7) rating = 'PRETTY GOOD 🎯';
+            else if (score >= 5) rating = 'NEEDS WORK 🤔';
+            else rating = 'KEEP PRACTICING 📰';
+            
+            detectorRating.innerHTML = `Your BS detector is: <strong>${rating}</strong>`;
+            
+            endScreen.classList.add('show');
+            
+            // Save stats
+            const stats = JSON.parse(localStorage.getItem('gameStats') || '{}');
+            stats.gamesPlayed = (stats.gamesPlayed || 0) + 1;
+            stats.totalScore = (stats.totalScore || 0) + score;
+            stats.lastScore = score;
+            localStorage.setItem('gameStats', JSON.stringify(stats));
+            
+            // Analytics
+            console.log('Game completed:', { score, percentage, betterThan });
+        }
+
+        // Setup buttons
+        function setupButtons() {
+            // Mute button
+            document.getElementById('mute-btn').addEventListener('click', () => {
+                muted = !muted;
+                document.getElementById('mute-btn').textContent = muted ? '🔇' : '🔊';
+            });
+            
+            // Continue button
+            document.getElementById('continue-btn').addEventListener('click', continueGame);
+            
+            // Share button
+            document.getElementById('share-btn').addEventListener('click', () => {
+                const betterThan = Math.round(50 + ((score / 10) * 50));
+                const rating = score >= 9 ? 'EXCELLENT!' :
+                             score >= 7 ? 'PRETTY GOOD' :
+                             score >= 5 ? 'NEEDS WORK' :
+                             'KEEP PRACTICING';
+                
+                const text = `I detected ${score}/10 fake news in FAKE NEWS! My BS detector is better than ${betterThan}% of players 🎯 Try it: https://fake-news-game.com`;
+                
+                if (navigator.share) {
+                    navigator.share({ text });
+                } else {
+                    navigator.clipboard.writeText(text);
+                    alert('Copied to clipboard!');
+                }
+                
+                // Analytics
+                console.log('Share button clicked');
+            });
+            
+            // Play again button
+            document.getElementById('play-again-btn').addEventListener('click', () => {
+                // Reset game
+                currentClaim = 0;
+                score = 0;
+                streak = 0;
+                isProcessing = false;
+                
+                document.getElementById('card-stack').style.display = '';
+                document.getElementById('end-screen').classList.remove('show');
+                
+                loadClaim();
+            });
+        }
+
+        // Start game when page loads
+        window.addEventListener('load', init);
+        
+        // Handle page visibility for audio context
+        document.addEventListener('visibilitychange', () => {
+            if (audioContext) {
+                if (document.hidden) {
+                    audioContext.suspend();
+                } else {
+                    audioContext.resume();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
