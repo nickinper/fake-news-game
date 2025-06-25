@@ -48,6 +48,29 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
+        .truth-level {
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .truth-level-bar {
+            width: 250px;
+            height: 6px;
+            background: #333;
+            margin: 8px auto;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .truth-level-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffed4e);
+            transition: width 0.5s ease;
+        }
+
         .progress {
             margin-top: 10px;
             font-size: 16px;
@@ -321,6 +344,315 @@
             100% { opacity: 0; }
         }
 
+        /* Slot Machine Styles */
+        .slot-machine-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #1a1a1a, #000);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 60;
+        }
+
+        .slot-machine-overlay.show {
+            display: flex;
+        }
+
+        .bonus-announcement {
+            position: absolute;
+            top: 20%;
+            font-size: 48px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+            font-family: Impact, sans-serif;
+            letter-spacing: 3px;
+            animation: pulse 0.5s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .slot-machine {
+            position: relative;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            padding: 5px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.3);
+        }
+
+        .slot-frame {
+            background: #0a0a0a;
+            padding: 30px;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .slot-lights {
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 20px;
+            background: conic-gradient(
+                #ffd700 0deg 10deg,
+                #ffed4e 10deg 20deg,
+                #ffd700 20deg 30deg,
+                #ffed4e 30deg 40deg,
+                #ffd700 40deg 50deg,
+                #ffed4e 50deg 60deg,
+                #ffd700 60deg 70deg,
+                #ffed4e 70deg 80deg,
+                #ffd700 80deg 90deg,
+                #ffed4e 90deg 100deg,
+                #ffd700 100deg 110deg,
+                #ffed4e 110deg 120deg,
+                #ffd700 120deg 130deg,
+                #ffed4e 130deg 140deg,
+                #ffd700 140deg 150deg,
+                #ffed4e 150deg 160deg,
+                #ffd700 160deg 170deg,
+                #ffed4e 170deg 180deg,
+                #ffd700 180deg 190deg,
+                #ffed4e 190deg 200deg,
+                #ffd700 200deg 210deg,
+                #ffed4e 210deg 220deg,
+                #ffd700 220deg 230deg,
+                #ffed4e 230deg 240deg,
+                #ffd700 240deg 250deg,
+                #ffed4e 250deg 260deg,
+                #ffd700 260deg 270deg,
+                #ffed4e 270deg 280deg,
+                #ffd700 280deg 290deg,
+                #ffed4e 290deg 300deg,
+                #ffd700 300deg 310deg,
+                #ffed4e 310deg 320deg,
+                #ffd700 320deg 330deg,
+                #ffed4e 330deg 340deg,
+                #ffd700 340deg 350deg,
+                #ffed4e 350deg 360deg
+            );
+            animation: rotate 2s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .slot-reels {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .slot-reel {
+            width: 200px;
+            height: 120px;
+            background: #1a1a1a;
+            border: 3px solid #ffd700;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .reel-strip {
+            position: absolute;
+            width: 100%;
+            transition: transform 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        }
+
+        .reel-strip.spinning {
+            animation: spin 0.1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-120px); }
+        }
+
+        .slot-item {
+            height: 120px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            line-height: 1.3;
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+            border-bottom: 1px solid #333;
+        }
+
+        .slot-timer {
+            width: 100%;
+            height: 10px;
+            background: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ff6600);
+            width: 100%;
+            transition: width 10s linear;
+        }
+
+        .timer-fill.countdown {
+            width: 0%;
+        }
+
+        .timer-warning {
+            animation: flash-warning 0.5s ease infinite;
+        }
+
+        @keyframes flash-warning {
+            0%, 100% { background: linear-gradient(90deg, #ff0000, #ff6600); }
+            50% { background: linear-gradient(90deg, #ff6600, #ffaa00); }
+        }
+
+        .slot-instructions {
+            font-size: 20px;
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .slot-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .slot-button {
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .slot-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.4);
+        }
+
+        .slot-button:active {
+            transform: translateY(0);
+        }
+
+        .slot-button.selected {
+            background: #ff0000;
+            color: #fff;
+        }
+
+        .jackpot-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 72px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.7);
+            font-family: Impact, sans-serif;
+            letter-spacing: 4px;
+            z-index: 100;
+        }
+
+        .jackpot-text.show {
+            animation: jackpot 1s ease forwards;
+        }
+
+        @keyframes jackpot {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); }
+            50% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+        }
+
+        .coin {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at 30% 30%, #ffed4e, #ffd700);
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #996600;
+        }
+
+        .coin::before {
+            content: '$';
+        }
+
+        @keyframes coin-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .screen-shake {
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .points-popup {
+            position: absolute;
+            font-size: 48px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            animation: points-float 2s ease forwards;
+            pointer-events: none;
+        }
+
+        @keyframes points-float {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-50px) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+
         @media (max-width: 480px) {
             .claim-text {
                 font-size: 20px;
@@ -329,6 +661,21 @@
             .card {
                 padding: 25px;
             }
+            
+            .slot-reel {
+                width: 110px;
+                height: 100px;
+            }
+            
+            .slot-item {
+                height: 100px;
+                font-size: 14px;
+                padding: 10px;
+            }
+            
+            .bonus-announcement {
+                font-size: 36px;
+            }
         }
     </style>
 </head>
@@ -336,6 +683,10 @@
     <div class="game-container">
         <div class="header">
             <h1 class="logo">FAKE NEWS!</h1>
+            <div class="truth-level" id="truth-level">TRUTH LEVEL: 0 ⬆️</div>
+            <div class="truth-level-bar">
+                <div class="truth-level-fill" id="truth-level-fill"></div>
+            </div>
             <div class="progress">
                 <span id="progress-text">Claim 1/10</span>
                 <div class="progress-bar">
@@ -374,9 +725,70 @@
         </div>
 
         <div class="flash" id="flash"></div>
+
+        <div class="slot-machine-overlay" id="slot-machine-overlay">
+            <div class="bonus-announcement">BONUS ROUND!</div>
+            <div class="slot-machine">
+                <div class="slot-lights"></div>
+                <div class="slot-frame">
+                    <div class="slot-instructions">TAP THE FAKE NEWS!</div>
+                    <div class="slot-timer">
+                        <div class="timer-fill" id="timer-fill"></div>
+                    </div>
+                    <div class="slot-reels">
+                        <div class="slot-reel">
+                            <div class="reel-strip" id="reel-1">
+                                <div class="slot-item"></div>
+                                <div class="slot-item"></div>
+                                <div class="slot-item"></div>
+                                <div class="slot-item"></div>
+                                <div class="slot-item"></div>
+                            </div>
+                        </div>
+                        <div class="slot-reel">
+                            <div class="reel-strip" id="reel-2">
+                                <div class="slot-item"></div>
+                                <div class="slot-item"></div>
+                                <div class="slot-item"></div>
+                                <div class="slot-item"></div>
+                                <div class="slot-item"></div>
+                            </div>
+                        </div>
+                        <div class="slot-reel">
+                            <div class="reel-strip" id="reel-3">
+                                <div class="slot-item"></div>
+                                <div class="slot-item"></div>
+                                <div class="slot-item"></div>
+                                <div class="slot-item"></div>
+                                <div class="slot-item"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slot-buttons">
+                        <button class="slot-button" data-index="0">1</button>
+                        <button class="slot-button" data-index="1">2</button>
+                        <button class="slot-button" data-index="2">3</button>
+                    </div>
+                </div>
+            </div>
+            <div class="jackpot-text" id="jackpot-text">JACKPOT!</div>
+        </div>
     </div>
 
     <script>
+        // Slot machine headlines
+        const slotHeadlines = [
+            { text: "NASA confirms Earth is actually flat", isReal: false },
+            { text: "Study shows people who play mobile games have higher IQ", isReal: false },
+            { text: "Trump once fired someone via carrier pigeon", isReal: false },
+            { text: "Scientists discover vegetables scream when eaten", isReal: false },
+            { text: "Florida man successfully wrestles tornado", isReal: false },
+            { text: "Pope Francis reveals he's been an atheist all along", isReal: false },
+            { text: "Trump said he could shoot somebody and not lose voters", isReal: true },
+            { text: "Trump called avoiding STDs his personal Vietnam", isReal: true },
+            { text: "Trump suggested injecting disinfectant to treat COVID", isReal: true }
+        ];
+
         // Game data
         const claims = [
             {
@@ -457,6 +869,9 @@
         let streak = 0;
         let muted = false;
         let isProcessing = false;
+        let totalPoints = 0;
+        let swipeStartTime = 0;
+        let slotMachineActive = false;
 
         // Audio context
         let audioContext;
@@ -525,6 +940,83 @@
                     }, i * 100);
                 });
             };
+
+            sounds.slotSpin = () => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                const filter = audioContext.createBiquadFilter();
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.type = 'square';
+                filter.type = 'bandpass';
+                filter.frequency.value = 800;
+                filter.Q.value = 1;
+                osc.frequency.setValueAtTime(200, audioContext.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1000, audioContext.currentTime + 0.5);
+                gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.5);
+            };
+
+            sounds.slotStop = () => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.value = 150;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.4, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.1);
+            };
+
+            sounds.jackpot = () => {
+                const notes = [261.63, 329.63, 392, 523.25, 659.25, 783.99, 1046.5]; // C4 to C6
+                notes.forEach((freq, i) => {
+                    setTimeout(() => {
+                        const osc = audioContext.createOscillator();
+                        const gain = audioContext.createGain();
+                        osc.connect(gain);
+                        gain.connect(audioContext.destination);
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        osc.start();
+                        osc.stop(audioContext.currentTime + 0.3);
+                    }, i * 80);
+                });
+            };
+
+            sounds.timerWarning = () => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.value = 800;
+                osc.type = 'square';
+                gain.gain.setValueAtTime(0, audioContext.currentTime);
+                gain.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.05);
+                gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.1);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.1);
+            };
+
+            sounds.trombone = () => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(130.81, audioContext.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(65.41, audioContext.currentTime + 0.8);
+                gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.8);
+            };
         }
 
         // Play sound
@@ -537,6 +1029,7 @@
         // Initialize game
         function init() {
             initAudio();
+            loadTruthLevel();
             loadClaim();
             setupSwipeHandlers();
             setupButtons();
@@ -548,6 +1041,70 @@
                 localStorage.setItem('lastDaily', today);
                 localStorage.setItem('dailyCompleted', 'false');
             }
+        }
+
+        // Load truth level
+        function loadTruthLevel() {
+            totalPoints = parseInt(localStorage.getItem('totalPoints') || '0');
+            updateTruthLevel();
+        }
+
+        // Update truth level display
+        function updateTruthLevel() {
+            const levelElement = document.getElementById('truth-level');
+            const fillElement = document.getElementById('truth-level-fill');
+            
+            let levelName, nextLevel, levelMin, levelMax;
+            
+            if (totalPoints < 100) {
+                levelName = 'Gullible';
+                nextLevel = 100;
+                levelMin = 0;
+                levelMax = 100;
+            } else if (totalPoints < 300) {
+                levelName = 'Skeptical';
+                nextLevel = 300;
+                levelMin = 100;
+                levelMax = 300;
+            } else if (totalPoints < 600) {
+                levelName = 'Fact Checker';
+                nextLevel = 600;
+                levelMin = 300;
+                levelMax = 600;
+            } else if (totalPoints < 1000) {
+                levelName = 'Truth Seeker';
+                nextLevel = 1000;
+                levelMin = 600;
+                levelMax = 1000;
+            } else {
+                levelName = 'TRUTH MASTER';
+                nextLevel = totalPoints + 100;
+                levelMin = 1000;
+                levelMax = totalPoints + 100;
+            }
+            
+            const progress = ((totalPoints - levelMin) / (levelMax - levelMin)) * 100;
+            
+            levelElement.textContent = `TRUTH LEVEL: ${totalPoints} ⬆️ ${levelName}`;
+            fillElement.style.width = `${progress}%`;
+            
+            localStorage.setItem('totalPoints', totalPoints.toString());
+        }
+
+        // Add points with animation
+        function addPoints(points, x, y) {
+            totalPoints += points;
+            updateTruthLevel();
+            
+            // Create floating points animation
+            const popup = document.createElement('div');
+            popup.className = 'points-popup';
+            popup.textContent = `+${points}`;
+            popup.style.left = `${x}px`;
+            popup.style.top = `${y}px`;
+            document.body.appendChild(popup);
+            
+            setTimeout(() => popup.remove(), 2000);
         }
 
         // Load current claim
@@ -564,6 +1121,9 @@
             card.querySelector('.claim-number').textContent = `Claim #${currentClaim + 1}`;
             
             playSound('swish');
+            
+            // Track swipe start time
+            swipeStartTime = Date.now();
             
             // Analytics
             console.log('Claim loaded:', currentClaim + 1);
@@ -661,6 +1221,22 @@
             const userAnswer = direction === 'right';
             const isCorrect = (userAnswer === claim.isReal);
             
+            // Calculate points
+            const swipeTime = (Date.now() - swipeStartTime) / 1000;
+            let points = 0;
+            
+            if (isCorrect) {
+                points += 10; // Base points
+                points += streak * 5; // Streak bonus
+                if (swipeTime < 2) {
+                    points += 3; // Speed bonus
+                }
+                
+                // Add points with animation
+                const rect = card.getBoundingClientRect();
+                addPoints(points, rect.left + rect.width / 2, rect.top + rect.height / 2);
+            }
+            
             // Animate card out
             card.classList.add(`swiped-${direction}`);
             
@@ -730,7 +1306,12 @@
             
             currentClaim++;
             
-            if (currentClaim < claims.length) {
+            // Check for bonus round (after claims 3, 6, and 9)
+            if (currentClaim === 3 || currentClaim === 6 || currentClaim === 9) {
+                setTimeout(() => {
+                    showSlotMachine();
+                }, 500);
+            } else if (currentClaim < claims.length) {
                 loadClaim();
                 isProcessing = false;
             } else {
@@ -773,6 +1354,173 @@
             
             // Analytics
             console.log('Game completed:', { score, percentage, betterThan });
+        }
+
+        // Show slot machine
+        function showSlotMachine() {
+            slotMachineActive = true;
+            const overlay = document.getElementById('slot-machine-overlay');
+            overlay.classList.add('show');
+            
+            // Select random headlines (2 fake, 1 real)
+            const fakeHeadlines = slotHeadlines.filter(h => !h.isReal);
+            const realHeadlines = slotHeadlines.filter(h => h.isReal);
+            
+            const selectedFakes = [];
+            for (let i = 0; i < 2; i++) {
+                const index = Math.floor(Math.random() * fakeHeadlines.length);
+                selectedFakes.push(fakeHeadlines.splice(index, 1)[0]);
+            }
+            
+            const selectedReal = realHeadlines[Math.floor(Math.random() * realHeadlines.length)];
+            
+            const selectedHeadlines = [...selectedFakes, selectedReal].sort(() => Math.random() - 0.5);
+            
+            // Setup reels
+            for (let i = 0; i < 3; i++) {
+                const reel = document.getElementById(`reel-${i + 1}`);
+                const items = reel.querySelectorAll('.slot-item');
+                
+                // Fill with random headlines for spinning effect
+                items.forEach((item, j) => {
+                    if (j === 2) {
+                        item.textContent = selectedHeadlines[i].text;
+                        item.dataset.isReal = selectedHeadlines[i].isReal;
+                    } else {
+                        const randomHeadline = slotHeadlines[Math.floor(Math.random() * slotHeadlines.length)];
+                        item.textContent = randomHeadline.text;
+                    }
+                });
+                
+                // Start spinning
+                reel.classList.add('spinning');
+                playSound('slotSpin');
+            }
+            
+            // Stop reels one by one
+            setTimeout(() => stopReel(0, selectedHeadlines), 1000);
+            setTimeout(() => stopReel(1, selectedHeadlines), 1500);
+            setTimeout(() => stopReel(2, selectedHeadlines), 2000);
+            
+            // Start timer after all reels stop
+            setTimeout(() => {
+                startSlotTimer(selectedHeadlines);
+            }, 2500);
+        }
+        
+        // Stop a reel
+        function stopReel(index, headlines) {
+            const reel = document.getElementById(`reel-${index + 1}`);
+            reel.classList.remove('spinning');
+            reel.style.transform = 'translateY(-240px)'; // Show the middle item
+            playSound('slotStop');
+        }
+        
+        // Start slot timer
+        function startSlotTimer(headlines) {
+            const timerFill = document.getElementById('timer-fill');
+            const buttons = document.querySelectorAll('.slot-button');
+            
+            // Enable buttons
+            buttons.forEach((btn, i) => {
+                btn.disabled = false;
+                btn.onclick = () => selectSlot(i, headlines);
+            });
+            
+            // Start countdown
+            timerFill.classList.add('countdown');
+            
+            // Timer warning sounds
+            let warningCount = 0;
+            const warningInterval = setInterval(() => {
+                if (warningCount >= 7) {
+                    timerFill.classList.add('timer-warning');
+                    playSound('timerWarning');
+                }
+                warningCount++;
+                
+                if (warningCount >= 10) {
+                    clearInterval(warningInterval);
+                    if (slotMachineActive) {
+                        // Time's up - auto fail
+                        handleSlotResult(false, null);
+                    }
+                }
+            }, 1000);
+        }
+        
+        // Select slot
+        function selectSlot(index, headlines) {
+            if (!slotMachineActive) return;
+            slotMachineActive = false;
+            
+            const buttons = document.querySelectorAll('.slot-button');
+            buttons[index].classList.add('selected');
+            buttons.forEach(btn => btn.disabled = true);
+            
+            const selectedHeadline = headlines[index];
+            const isCorrect = !selectedHeadline.isReal; // Correct if they picked fake
+            
+            handleSlotResult(isCorrect, index);
+        }
+        
+        // Handle slot result
+        function handleSlotResult(isCorrect, selectedIndex) {
+            const overlay = document.getElementById('slot-machine-overlay');
+            const container = document.querySelector('.game-container');
+            
+            if (isCorrect) {
+                // Jackpot!
+                playSound('jackpot');
+                
+                // Show jackpot text
+                const jackpotText = document.getElementById('jackpot-text');
+                jackpotText.classList.add('show');
+                
+                // Screen shake
+                container.classList.add('screen-shake');
+                
+                // Add bonus points
+                addPoints(50, window.innerWidth / 2, window.innerHeight / 2);
+                
+                // Coin explosion
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        const coin = document.createElement('div');
+                        coin.className = 'coin';
+                        coin.style.left = `${Math.random() * window.innerWidth}px`;
+                        coin.style.top = '-50px';
+                        coin.style.animation = `coin-fall ${2 + Math.random() * 2}s ease-in`;
+                        document.body.appendChild(coin);
+                        
+                        setTimeout(() => coin.remove(), 4000);
+                    }, i * 50);
+                }
+            } else {
+                // Wrong - sad trombone
+                streak = 0; // Reset streak
+                playSound('trombone');
+            }
+            
+            // Hide slot machine after delay
+            setTimeout(() => {
+                overlay.classList.remove('show');
+                container.classList.remove('screen-shake');
+                document.getElementById('jackpot-text').classList.remove('show');
+                document.getElementById('timer-fill').classList.remove('countdown', 'timer-warning');
+                document.querySelectorAll('.slot-button').forEach(btn => {
+                    btn.classList.remove('selected');
+                    btn.disabled = false;
+                });
+                
+                // Continue game
+                if (currentClaim < claims.length) {
+                    loadClaim();
+                    isProcessing = false;
+                } else {
+                    showEndScreen();
+                }
+            }, isCorrect ? 3000 : 2000);
         }
 
         // Setup buttons
